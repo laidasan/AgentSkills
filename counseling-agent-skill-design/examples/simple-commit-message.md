@@ -1,6 +1,6 @@
 # Example: Commit Message Skill（簡單需求）
 
-> 展示一個簡單需求如何走過 Phase 1-6。
+> 展示一個簡單需求如何走過 Phase 1-3，並產出設計文件。
 
 ---
 
@@ -31,36 +31,52 @@
 | 5 | 產生 commit message | LLM | 需要組合資訊 + 遵循風格 |
 | 6 | 呈現確認 | Script | 直接輸出結果 |
 
-## Phase 4 產出：Metadata
+---
 
-```yaml
-name: writing-commit-message
-description: >
-  Generates Conventional Commits messages from staged changes.
-  Triggers when the user asks to write or draft a commit message.
-```
+## 設計文件產出
 
-結構：單檔 SKILL.md（預估 < 100 行）
+以下為依 `templates/skill-design-doc.md` 格式產出的設計文件：
 
-## Phase 5 產出：SKILL.md 草稿片段
+### 1. Skill Overview
 
-```markdown
-## Workflow
+#### 問題與目標
 
-1. 執行 `git diff --cached`，取得 staged changes
-2. 執行 `git log --oneline -10`，取得近期 commit 風格
-3. 分析 diff 內容，摘要變更意圖
-4. 判斷 commit type：
-   - 新增功能 → `feat`
-   - 修復 bug → `fix`
-   - 重構（不改行為）→ `refactor`
-   - 文件 → `docs`
-   - 測試 → `test`
-5. 用以下格式產生 commit message：
-   ```
-   <type>(<scope>): <summary>
+每次 commit 前手動撰寫 commit message，格式不一致、品質不穩定。需要一個 Skill 自動根據 staged changes 產生符合 Conventional Commits 格式的 message。
 
-   <body — 列出主要變更>
-   ```
-6. 呈現給使用者，等待確認或修改
-```
+#### 使用情境
+
+使用者在 commit 前主動呼叫，每次 commit 使用一次。
+
+#### 輸入 / 輸出
+
+| 項目 | 說明 |
+|---|---|
+| 輸入 | Git staged changes（diff）+ 近期 commit 歷史 |
+| 輸出 | 一則 Conventional Commits 格式的 commit message |
+
+### 2. Workflow Steps
+
+| # | 步驟 | 動作描述 | 輸入 → 輸出 | 類型 | 實作備註 |
+|---|---|---|---|---|---|
+| 1 | 讀取 staged diff | 取得目前 staged 的變更內容 | git 狀態 → diff 文字 | Script | `git diff --cached` |
+| 2 | 讀取 commit log | 取得近期 commit 風格參考 | git repo → 近 10 筆 commit | Script | `git log --oneline -10` |
+| 3 | 分析變更內容 | 語義理解 diff，摘要變更意圖 | diff → 變更摘要 | LLM | 需判斷框架 |
+| 4 | 判斷 commit type | 根據摘要決定 type | 變更摘要 → type | LLM | feat/fix/refactor/docs/test |
+| 5 | 產生 commit message | 組合 type + 摘要 + 風格 | type + 摘要 + 風格參考 → message | LLM | 使用 Conventional Commits 模板 |
+| 6 | 呈現確認 | 輸出結果等待使用者確認 | message → 使用者回饋 | Script | 直接輸出 |
+
+### 3. Dependencies & Constraints
+
+#### 步驟間關係
+
+- 步驟 1、2 可並行執行
+- 步驟 3-5 必須循序（3 → 4 → 5）
+- 步驟 6 在 5 完成後執行
+
+#### 例外處理
+
+- 無 staged changes 時，告知使用者並結束
+
+#### 特殊偏好與限制
+
+（無）

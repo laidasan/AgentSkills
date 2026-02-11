@@ -1,6 +1,6 @@
 # Example: Version Tracker Skill（複雜需求）
 
-> 展示一個多步驟、Script/LLM 混合的複雜需求如何走過 Phase 1-6。
+> 展示一個多步驟、Script/LLM 混合的複雜需求如何走過 Phase 1-3，並產出設計文件。
 
 ---
 
@@ -37,23 +37,58 @@
 
 **灰色地帶討論：** 步驟 6 是典型的混合型 — 模板用 Template Pattern 固定結構，LLM 負責填入分析內容。
 
-## Phase 4 產出：Metadata
+---
 
-```yaml
-name: tracking-ecosystem-updates
-description: >
-  Tracks Claude Code version releases, analyzes changelogs, writes articles
-  in three languages, and saves to publish directories. Triggers when checking
-  for updates or when a new version is detected.
-model: sonnet
-```
+## 設計文件產出
 
-結構：SKILL.md + `templates/article.md`（文章模板獨立）
+以下為依 `templates/skill-design-doc.md` 格式產出的設計文件：
 
-## Phase 5 重點：組裝策略
+### 1. Skill Overview
 
-- 步驟 1-3（Script）：直接給 code block
-- 步驟 4-5（LLM）：給判斷框架 + few-shot examples
-- 步驟 6（混合）：引用 `@templates/article.md`，LLM 填空
-- 步驟 7（LLM）：給翻譯約束（保留技術詞不翻譯、語氣一致）
-- 步驟 8（Script）：固定路徑 `articles/{lang}/yyyy-mm-dd-title.md`
+#### 問題與目標
+
+手動追蹤 Claude Code 版本更新、撰寫介紹文章、翻譯成多語、存檔發佈，流程繁瑣且重複。需要一個 Skill 自動化從版本偵測到多語文章產出的完整流程。
+
+#### 使用情境
+
+定期或手動觸發，檢查是否有新版本。有更新時自動產出三語文章。
+
+#### 輸入 / 輸出
+
+| 項目 | 說明 |
+|---|---|
+| 輸入 | GitHub release API（anthropics/claude-code） |
+| 輸出 | 三語文章（EN/ZH/JA），存到 `articles/{lang}/` 目錄 |
+
+### 2. Workflow Steps
+
+| # | 步驟 | 動作描述 | 輸入 → 輸出 | 類型 | 實作備註 |
+|---|---|---|---|---|---|
+| 1 | 查詢最新版本 | 呼叫 GitHub API 取得最新 release | GitHub API → 版本字串 | Script | `gh api repos/anthropics/claude-code/releases/latest --jq '.tag_name'` |
+| 2 | 比對已知版本 | 與本地紀錄比較是否有更新 | 版本字串 + 本地紀錄 → boolean | Script | 讀取 `last-known-version.txt` 做字串比較 |
+| 3 | 抓取 changelog | 取得該版本的變更日誌 | 版本號 → changelog 文字 | Script | WebFetch 固定 URL pattern |
+| 4 | 分析重要變更 | 判斷哪些變更對使用者重要並分級 | changelog → 分級摘要 | LLM | 分級標準：High=影響日常使用、Medium=新指令/參數、Low=bug fix |
+| 5 | 決定角度與標題 | 決定文章切入點和標題 | 摘要 → 標題 + 大綱 | LLM | 角度：告訴讀者「這對你意味著什麼」 |
+| 6 | 用模板撰寫文章 | 以固定模板結構填入動態內容 | 大綱 + 模板 → 文章草稿 | 混合 | 模板結構固定，LLM 填充分析內容 |
+| 7 | 翻譯為三語 | 將文章翻譯成 EN/ZH/JA | 文章 → 三版翻譯 | LLM | 技術詞保留原文不翻譯，語氣一致 |
+| 8 | 存檔 | 存到對應語言目錄 | 三版文章 → 檔案路徑 | Script | `articles/{lang}/yyyy-mm-dd-title.md` |
+
+### 3. Dependencies & Constraints
+
+#### 步驟間關係
+
+- 步驟 1 → 2 → 3：嚴格循序（版本比對通過才繼續）
+- 步驟 2 若無更新：直接結束，不執行後續步驟
+- 步驟 4 → 5 → 6 → 7 → 8：循序執行
+
+#### 例外處理
+
+- GitHub API 無法連線 → 記錄錯誤，下次重試
+- 無更新 → 告知使用者，正常結束
+- 翻譯品質不確定 → 產出後提示使用者人工審閱
+
+#### 特殊偏好與限制
+
+- 文章模板需獨立管理（`templates/article.md`）
+- 技術術語（如 Claude Code、Agent Teams）不翻譯
+- 標題格式：`Claude Code vX.Y.Z: {one-line highlight}`
