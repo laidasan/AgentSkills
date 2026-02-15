@@ -8,12 +8,19 @@ user-invocable: true
 
 > 透過結構化的引導流程，協助使用者釐清 Agent Skill 的需求、拆解工作流程、標記 Script/LLM 分類，最終產出一份設計文件。
 
----
-
 ## Workflow
 
 > 每個 Phase 開始前，LLM 先判斷使用者是否已提供足夠資訊。
 > 若資訊足夠，快速確認後進入下一階段，不強制執行每個 Phase 的完整流程。
+
+### Phase 0:
+1. 確認有沒有 `skill-core-principles` 這項 SKILL。
+1-1. 有，進入第二步驟。
+1-2. 無，進入 Phase 1。
+2. 確認是否已經載入 `skill-core-principles` 這項 SKILL.md。
+2-1. 已載入，進入 Phase 1。
+2.2. 未載入，進入第三步驟。
+3. 載入 `skill-core-principles` 這項 SKILL，載入完成後，進入 Phase 1。
 
 ### Phase 1: 釐清需求與脈絡
 
@@ -47,6 +54,15 @@ user-invocable: true
 2. 每個步驟用「動詞 + 對象」描述（如：讀取 git log、比對 diff、產生摘要）
 3. 標記步驟之間的依賴關係（哪些可以並行、哪些必須循序）
 4. 識別分支點：有條件判斷的地方獨立成步驟
+
+**Workflow Pattern 參考：**
+
+根據使用者任務的特徵，參考適合的 workflow pattern：
+
+- 多步驟、需追蹤進度 → See [checklist-workflow.md](reference/checklist-workflow.md)
+- 產出需驗證、品質敏感 → See [feedback-loop.md](reference/feedback-loop.md)
+- 有分支判斷、條件路徑 → See [conditional-workflow.md](reference/conditional-workflow.md)
+- 不可逆操作、需先驗證計畫 → See [plan-validate-execute.md](reference/plan-validate-execute.md)
 
 **向使用者確認的關鍵問題：**
 
