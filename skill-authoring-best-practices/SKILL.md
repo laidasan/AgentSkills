@@ -1,6 +1,7 @@
 ---
 name: skill-authoring-best-practices
 description: Authoring constraints and guidelines for writing SKILL.md files. Provides metadata rules, structure limits, content standards, and anti-patterns. Triggers when creating or reviewing a SKILL.md to ensure it meets quality standards.
+user-invocable: true
 ---
 
 # 前置

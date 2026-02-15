@@ -1,6 +1,7 @@
 ---
 name: skill-core-principles
 description: Core design principles for Agent Skills. Load this skill before designing or authoring any SKILL to calibrate constraints: single responsibility, conciseness, and degrees of freedom.
+user-invocable: true
 ---
 
 # SKILL 核心原則
