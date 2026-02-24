@@ -37,12 +37,38 @@ source ~/.nvm/nvm.sh && nvm use 18
 
 ## Workflow
 
-### Step 1｜執行截圖腳本
+### Step 1｜確認密碼
 
-執行以下指令，腳本會引導使用者輸入密碼並選擇頁面：
+使用 AskUserQuestion 詢問使用者是否需要密碼：
+
+- 若需要 → 請使用者提供密碼，帶入 `--password` 參數
+- 若不需要 → `--password` 參數留空，腳本會自動跳過
+
+### Step 2｜取得頁面清單
+
+執行腳本的 `--list` 模式，輸出頁面清單 JSON：
 
 ```bash
-NODE_PATH=$(npm root -g) node ./crawler.cjs [axure網址]
+source ~/.nvm/nvm.sh && nvm use 18 && NODE_PATH=$(npm root -g) node ./scripts/crawler.cjs [axure網址] --password [密碼] --list
+```
+
+解析輸出的 JSON，取得所有頁面名稱。
+
+### Step 3｜讓使用者選擇頁面
+
+根據頁面數量選擇互動方式：
+
+- **頁面數 <= 4**：使用 AskUserQuestion（multiSelect: true）呈現選項，讓使用者勾選
+- **頁面數 > 4**：以 Markdown 表格列出完整清單（含編號與頁面名稱），請使用者以文字回覆編號或名稱
+
+> AskUserQuestion 的 options 上限為 4 個，頁面數超過時必須改用文字互動。
+
+### Step 4｜執行截圖
+
+將使用者選擇的頁面名稱以逗號串接，帶入 `--pages` 參數執行截圖：
+
+```bash
+source ~/.nvm/nvm.sh && nvm use 18 && NODE_PATH=$(npm root -g) node ./scripts/crawler.cjs [axure網址] --password [密碼] --pages "[頁面1,頁面2,...]"
 ```
 
 腳本執行完成後會輸出：
@@ -51,7 +77,7 @@ NODE_PATH=$(npm root -g) node ./crawler.cjs [axure網址]
 
 若腳本回報 Playwright 未安裝，引導使用者執行 Prerequisites 的安裝指令後重試。
 
-### Step 2｜分析截圖，產出 Markdown
+### Step 5｜分析截圖，產出 Markdown
 
 截圖完成後，對每一張截圖執行以下流程：
 
