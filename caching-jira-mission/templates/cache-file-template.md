@@ -2,6 +2,8 @@
 
 ## YAML Frontmatter 結構
 
+所有 value 一律使用雙引號包裹，確保含冒號或特殊字元的內容不會破壞 YAML 解析。
+
 ```yaml
 ---
 parentKey: "VIPOP-44083"
@@ -10,6 +12,7 @@ issues:
   - key: "VIPOP-44121"
     summary: "[AI 智慧查詢] 每日瀏覽上限，彈跳提醒異常"
     status: "In Testing"
+    assignee: "Samura Chen"
     created: "2026/03/17 19:31"
     updated: "2026/03/20 15:19"
     type: "前端"
@@ -17,6 +20,7 @@ issues:
   - key: "VIPOP-44122"
     summary: "API 回傳格式錯誤"
     status: "In Progress"
+    assignee: "未指派"
     created: "2026/03/18 10:00"
     updated: "2026/03/19 14:30"
     type: "後端"
@@ -33,10 +37,17 @@ issues:
 > 篩選狀態：Open, In Sprint, In Progress, In Testing, Reopen
 > 子任務數量：2 筆
 
-| Key | Summary | Status | Type | Type Reason | Created | Updated |
-|---|---|---|---|---|---|---|
-| VIPOP-44121 | [AI 智慧查詢] 每日瀏覽上限，彈跳提醒異常 | In Testing | 前端 | 涉及 UI 彈跳提醒與文案顯示 | 2026/03/17 19:31 | 2026/03/20 15:19 |
-| VIPOP-44122 | API 回傳格式錯誤 | In Progress | 後端 | 涉及 API response 格式處理 | 2026/03/18 10:00 | 2026/03/19 14:30 |
+| Key | Summary | Status | Assignee | Type | Type Reason | Created | Updated |
+|---|---|---|---|---|---|---|---|
+| VIPOP-44121 | [AI 智慧查詢] 每日瀏覽上限，彈跳提醒異常 | In Testing | Samura Chen | 前端 | 涉及 UI 彈跳提醒與文案顯示 | 2026/03/17 19:31 | 2026/03/20 15:19 |
+| VIPOP-44122 | API 回傳格式錯誤 | In Progress | 未指派 | 後端 | 涉及 API response 格式處理 | 2026/03/18 10:00 | 2026/03/19 14:30 |
+
+### 狀態統計
+
+| Status | 數量 |
+|---|---|
+| In Testing | 1 |
+| In Progress | 1 |
 ```
 
 ## 差異 Table

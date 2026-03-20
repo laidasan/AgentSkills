@@ -1,6 +1,6 @@
 ---
 name: caching-jira-mission
-description: Queries Jira sub-tasks under a parent task, caches results with diff tracking, and classifies each issue as frontend or backend. Triggers when a user provides a Jira parent task key, e.g. "/caching-jira-mission VIPOP-44083".
+description: Queries Jira sub-tasks under a parent task, caches results with diff tracking, and classifies each issue as frontend or backend. Triggers when a user provides a Jira parent task key (e.g. "/caching-jira-mission VIPOP-44083"), wants to check sub-task progress, track Jira issue changes over time, or needs a quick overview of what's new/changed under a parent task.
 user-invocable: true
 ---
 
@@ -20,9 +20,11 @@ user-invocable: true
 
 呼叫 `mcp__claude_ai_Atlassian__getAccessibleAtlassianResources`，從回傳結果取得第一筆的 cloudId。
 
+若回傳結果為空 → 輸出「無法取得 Jira 資源，請確認 Atlassian 連線設定」，結束流程。
+
 ### Step 2 + 3（並行執行）
 
-以下兩步驟同時執行：
+Step 2 和 Step 3 皆不依賴彼此的結果，且 parent-task-key 來自使用者輸入（非 Step 1 產物），因此可並行。
 
 #### Step 2｜查詢子任務
 
@@ -30,7 +32,7 @@ user-invocable: true
 
 - **cloudId**: Step 1 取得的值
 - **jql**: `parent = {parent-task-key} AND status in ("Open","In Sprint","In Progress","In Testing","Reopen")`
-- **fields**: `["summary","status","description","created","updated"]`
+- **fields**: `["summary","status","description","assignee","created","updated"]`
 - **maxResults**: `100`
 - **responseContentFormat**: `"markdown"`
 
@@ -41,6 +43,7 @@ user-invocable: true
 - `key`（頂層欄位）
 - `fields.summary`
 - `fields.status.name`
+- `fields.assignee.displayName`（若為 null 則填「未指派」）
 - `fields.description`（供 Step 4 使用，不寫入快取）
 - `fields.created`
 - `fields.updated`
@@ -58,6 +61,7 @@ node ./scripts/parse-cache.cjs "./jiraIssuesCaching/{parent-task-key}_issues.md"
 解析輸出的 JSON：
 - `exists: true` → 取得 `issues` 陣列和 `lastUpdated` 供 Step 5 使用
 - `exists: false` → 標記為首次執行
+- 若回傳含 `error` 欄位 → 視為首次執行，並在最終輸出中附帶警告：「舊快取檔案解析失敗：{error}，本次視為首次快取」
 
 ### Step 4｜判斷前端/後端類型
 
@@ -80,7 +84,7 @@ node ./scripts/parse-cache.cjs "./jiraIssuesCaching/{parent-task-key}_issues.md"
 | 新增 | key 存在於新資料，不存在於舊資料 |
 | 不再出現 | key 存在於舊資料，不存在於新資料 |
 
-**注意**：差異比對欄位為 key, summary, status, created, updated。`type` 和 `typeReason` 不參與比對。
+**注意**：差異比對欄位為 key, summary, status, assignee, created, updated。`type` 和 `typeReason` 不參與比對。
 
 若 Step 3 為首次執行 → 跳過比對，差異結果為空。
 
@@ -95,9 +99,15 @@ node ./scripts/parse-cache.cjs "./jiraIssuesCaching/{parent-task-key}_issues.md"
 > 篩選狀態：Open, In Sprint, In Progress, In Testing, Reopen
 > 子任務數量：{數量} 筆
 
-| Key | Summary | Status | Type | Type Reason | Created | Updated |
-|---|---|---|---|---|---|---|
-| {key} | {summary} | {status} | {type} | {typeReason} | {created} | {updated} |
+| Key | Summary | Status | Assignee | Type | Type Reason | Created | Updated |
+|---|---|---|---|---|---|---|---|
+| {key} | {summary} | {status} | {assignee} | {type} | {typeReason} | {created} | {updated} |
+
+### 狀態統計
+
+| Status | 數量 |
+|---|---|
+| {status} | {count} |
 ```
 
 ### Step 7｜輸出差異 Table
@@ -137,10 +147,11 @@ node ./scripts/parse-cache.cjs "./jiraIssuesCaching/{parent-task-key}_issues.md"
 
 ### Step 8｜寫入快取檔案
 
-1. 若 `jiraIssuesCaching/` 目錄不存在，先建立
+1. 若 `jiraIssuesCaching/` 目錄不存在，先建立（快取目錄位於**使用者當前工作目錄**下的 `jiraIssuesCaching/`）
 2. 依 @templates/cache-file-template.md 的格式，寫入 `./jiraIssuesCaching/{parent-task-key}_issues.md`
 
 檔案內容依序為：
-1. YAML frontmatter（含 parentKey, lastUpdated, issues 陣列——每筆含 key, summary, status, created, updated, type, typeReason）
+1. YAML frontmatter（含 parentKey, lastUpdated, issues 陣列——每筆含 key, summary, status, assignee, created, updated, type, typeReason）
+   - **所有 value 一律用雙引號包裹**（確保含冒號、特殊字元的 summary 不會破壞解析）
 2. 當前任務 Markdown table（同 Step 6 格式）
 3. 差異 Markdown table（同 Step 7 格式）

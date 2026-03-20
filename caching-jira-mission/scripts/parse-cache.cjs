@@ -76,27 +76,27 @@ function parseYaml(yaml) {
 
     if (inIssues) {
       // 新的 issue item（以 "  - key:" 開頭）
-      const newItemMatch = line.match(/^\s+-\s+(\w+):\s*"?(.*?)"?\s*$/);
+      const newItemMatch = line.match(/^\s+-\s+(\w+):\s+(.*)\s*$/);
       if (newItemMatch) {
         if (currentIssue) {
           result.issues.push(currentIssue);
         }
         currentIssue = {};
-        currentIssue[newItemMatch[1]] = stripQuotes(newItemMatch[2]);
+        currentIssue[newItemMatch[1]] = stripQuotes(newItemMatch[2].trim());
         continue;
       }
 
       // issue 的後續欄位（以 "    key:" 開頭，無 -）
-      const fieldMatch = line.match(/^\s+(\w+):\s*"?(.*?)"?\s*$/);
+      const fieldMatch = line.match(/^\s+(\w+):\s+(.*)\s*$/);
       if (fieldMatch && currentIssue) {
-        currentIssue[fieldMatch[1]] = stripQuotes(fieldMatch[2]);
+        currentIssue[fieldMatch[1]] = stripQuotes(fieldMatch[2].trim());
         continue;
       }
     } else {
       // 頂層 key: value
-      const topLevelMatch = line.match(/^(\w+):\s*"?(.*?)"?\s*$/);
+      const topLevelMatch = line.match(/^(\w+):\s+(.*)\s*$/);
       if (topLevelMatch) {
-        result[topLevelMatch[1]] = stripQuotes(topLevelMatch[2]);
+        result[topLevelMatch[1]] = stripQuotes(topLevelMatch[2].trim());
       }
     }
   }
