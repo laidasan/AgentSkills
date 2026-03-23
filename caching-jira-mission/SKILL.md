@@ -52,11 +52,13 @@ Step 2 和 Step 3 皆不依賴彼此的結果，且 parent-task-key 來自使用
 
 #### Step 3｜讀取舊快取
 
-執行腳本解析舊快取檔案：
+執行腳本解析舊快取檔案（腳本位於 skill 的 base directory 下，路徑須使用載入時提供的 base directory 絕對路徑）：
 
 ```bash
-node ./scripts/parse-cache.cjs "./jiraIssuesCaching/{parent-task-key}_issues.md"
+node {skill-base-directory}/scripts/parse-cache.cjs "./jiraIssuesCaching/{parent-task-key}_issues.md"
 ```
+
+> `{skill-base-directory}` 即本 skill 載入時顯示的 "Base directory for this skill" 路徑。
 
 解析輸出的 JSON：
 - `exists: true` → 取得 `issues` 陣列和 `lastUpdated` 供 Step 5 使用
@@ -148,7 +150,7 @@ node ./scripts/parse-cache.cjs "./jiraIssuesCaching/{parent-task-key}_issues.md"
 ### Step 8｜寫入快取檔案
 
 1. 若 `jiraIssuesCaching/` 目錄不存在，先建立（快取目錄位於**使用者當前工作目錄**下的 `jiraIssuesCaching/`）
-2. 依 @templates/cache-file-template.md 的格式，寫入 `./jiraIssuesCaching/{parent-task-key}_issues.md`
+2. 依 `{skill-base-directory}/templates/cache-file-template.md` 的格式，寫入 `./jiraIssuesCaching/{parent-task-key}_issues.md`
 
 檔案內容依序為：
 1. YAML frontmatter（含 parentKey, lastUpdated, issues 陣列——每筆含 key, summary, status, assignee, created, updated, type, typeReason）
