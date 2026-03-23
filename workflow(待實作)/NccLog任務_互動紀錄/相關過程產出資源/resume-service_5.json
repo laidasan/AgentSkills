@@ -1,0 +1,2268 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "VIP Resume Service - Auth API",
+    "description": "VIP Team 履歷服務 提供給前端單位使用的 API",
+    "contact": {
+      "name": "VIP 開發小夥伴",
+      "email": "4AE01@104.com.tw"
+    },
+    "version": "0.0.1",
+    "license": {
+      "name": "VIP Team",
+      "url": "https://github.com/orgs/104corp/teams/104vip"
+    }
+  },
+  "servers": [
+    {
+      "url": "http://localhost:8080/webapi",
+      "description": "local dev 環境"
+    },
+    {
+      "url": "https://vip-resume-service.104dc-dev.com/webapi",
+      "description": "Development/lab server"
+    },
+    {
+      "url": "https://vip-resume-service.104dc-staging.com/webapi",
+      "description": "Staging server"
+    },
+    {
+      "url": "https://vip-resume-service.104dc.com/webapi",
+      "description": "Production server"
+    }
+  ],
+  "security": [],
+  "tags": [
+    {
+      "name": "print",
+      "description": "影印"
+    },
+    {
+      "name": "follower",
+      "description": "關注公司履歷"
+    },
+    {
+      "name": "farm",
+      "description": "關鍵人才庫(農場)"
+    },
+    {
+      "name": "key-jobs",
+      "description": "重點職務推薦履歷"
+    },
+    {
+      "name": "nlp",
+      "description": "NLP 履歷搜尋"
+    },
+    {
+      "name": "voip",
+      "description": "視訊面談"
+    },
+    {
+      "name": "document-resume",
+      "description": "儲存履歷"
+    },
+    {
+      "name": "document",
+      "description": "檔案夾履歷管理"
+    }
+  ],
+  "paths": {
+    "/resume/print-format": {
+      "get": {
+        "tags": [
+          "print"
+        ],
+        "summary": "Get print format settings",
+        "description": "Retrieve the print format settings for a user's resume.",
+        "operationId": "get-resume-print-format",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Show"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Unauthorized"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Unexpected Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/resume/followers/search": {
+      "post": {
+        "tags": [
+          "follower"
+        ],
+        "summary": "取得關注公司履歷列表",
+        "description": "取得關注公司履歷列表",
+        "operationId": "post-resume-followers-search",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Search"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationError"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Unauthorized"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "找不到相關資料",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotFound"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InternalServerError"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ResumeSearchBase"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/resume/followers/farm-token": {
+      "get": {
+        "tags": [
+          "follower",
+          "farm"
+        ],
+        "summary": "取得關鍵人才庫(農場)關注公司履歷 iframe 的 Token",
+        "description": "取得關鍵人才庫(農場)關注公司履歷 iframe 的 Token",
+        "operationId": "get-resume-followers-farm-token",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FarmToken"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Unauthorized"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "找不到相關資料",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotFound"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InternalServerError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/resume/key-jobs/recommend": {
+      "post": {
+        "tags": [
+          "key-jobs"
+        ],
+        "summary": "取得重點職務推薦履歷列表",
+        "description": "取得重點職務推薦履歷列表",
+        "operationId": "post-resume-key-jobs-recommend",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Recommend-2"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationError"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Unauthorized"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CompanySwitchOff"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "找不到相關資料",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotFound"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InternalServerError"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Recommend"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/resume/nlp/search": {
+      "post": {
+        "tags": [
+          "nlp"
+        ],
+        "summary": "NLP 智能履歷搜尋",
+        "description": "使用 NLP 進行履歷搜尋",
+        "operationId": "post-resume-nlp-search",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Search-3"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "$ref": "#/components/schemas/ValidationError"
+                    },
+                    {
+                      "$ref": "#/components/schemas/SearchLimitReached"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Unauthorized"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CompanySwitchOff"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "找不到相關資料",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotFound"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Unprocessable Entity",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PromptInjectionDetected"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InternalServerError"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Search-2"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/resume/nlp/highlights/{idNo}": {
+      "post": {
+        "tags": [
+          "nlp"
+        ],
+        "summary": "取得履歷亮點",
+        "description": "取得為何適合你推薦內容",
+        "operationId": "post-resume-nlp-highlights",
+        "parameters": [
+          {
+            "name": "idNo",
+            "in": "path",
+            "required": true,
+            "description": "履歷代碼",
+            "schema": {
+              "type": "string",
+              "example": "3781639104861"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Highlights-2"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "$ref": "#/components/schemas/ValidationError"
+                    },
+                    {
+                      "$ref": "#/components/schemas/SearchLimitReached"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Unauthorized"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CompanySwitchOff"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "找不到相關資料",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotFound"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InternalServerError"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Highlights"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/voip/job/{jobNo}/call-info/{idNo}": {
+      "get": {
+        "tags": [
+          "voip"
+        ],
+        "summary": "取得視訊面談資訊",
+        "description": "取得視訊面談資訊",
+        "operationId": "get-voip-job-jobNo-call-info-idNo",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "jobNo",
+            "required": true,
+            "description": "職務代碼",
+            "schema": {
+              "type": "string",
+              "example": "8322081"
+            }
+          },
+          {
+            "in": "path",
+            "name": "idNo",
+            "required": true,
+            "description": "求職者編號",
+            "schema": {
+              "type": "string",
+              "example": "3781639105618"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Show-2"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "找不到相關資料",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotFound"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InternalServerError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/document/folders/{folderId}/resumes": {
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/AdditionalInfo"
+        },
+        {
+          "in": "path",
+          "name": "folderId",
+          "required": true,
+          "description": "檔案夾編號",
+          "schema": {
+            "type": "string",
+            "example": "1234567890123456789"
+          }
+        }
+      ],
+      "post": {
+        "summary": "儲存履歷至檔案夾",
+        "description": "儲存履歷至檔案夾",
+        "operationId": "store-folder-resumes",
+        "tags": [
+          "document",
+          "document-resume"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Store"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Store-2"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "$ref": "#/components/schemas/ValidationError"
+                    },
+                    {
+                      "$ref": "#/components/schemas/BrowseLimitReached"
+                    },
+                    {
+                      "$ref": "#/components/schemas/FolderResumeLimitReached"
+                    }
+                  ]
+                },
+                "examples": {
+                  "ValidationError": {
+                    "value": {
+                      "code": "00004",
+                      "message": "帶入內容驗證失敗"
+                    }
+                  },
+                  "BrowseLimitReached": {
+                    "value": {
+                      "code": "00401",
+                      "message": "今日履歷查詢數已達上限300筆",
+                      "details": {
+                        "max": 300,
+                        "used": 299
+                      }
+                    }
+                  },
+                  "FolderResumeLimitReached": {
+                    "value": {
+                      "code": "00602",
+                      "message": "儲存履歷數量已達上限",
+                      "details": {
+                        "max": 300,
+                        "used": 299
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Unauthorized"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "$ref": "#/components/schemas/FeatureForbidden"
+                    },
+                    {
+                      "$ref": "#/components/schemas/JobUnauthorizedPermission"
+                    },
+                    {
+                      "$ref": "#/components/schemas/ResumeAccessForbidden"
+                    }
+                  ]
+                },
+                "examples": {
+                  "FeatureForbidden": {
+                    "value": {
+                      "code": "00008",
+                      "message": "此功能您尚無權限使用，請洽貴公司主要人事聯絡人開放權限"
+                    }
+                  },
+                  "JobUnauthorizedPermission": {
+                    "value": {
+                      "code": "00502",
+                      "message": "此職務您尚無權限使用，請洽貴公司主要人事聯絡人開放權限"
+                    }
+                  },
+                  "ResumeAccessForbidden": {
+                    "value": {
+                      "code": "00402",
+                      "message": "履歷無法存取"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found - 檔案夾不存在",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotFound"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict - 重複儲存履歷",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DuplicateFolderResume"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InternalServerError"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Error": {
+        "title": "Error Response",
+        "description": "當 API 回傳錯誤時的 object",
+        "type": "object",
+        "properties": {
+          "code": {
+            "description": "錯誤代碼，errorCode 為五碼的數字(string)，未知錯誤則為 0",
+            "type": "string",
+            "default": "00000"
+          },
+          "message": {
+            "description": "錯誤訊息",
+            "type": "string",
+            "default": ""
+          },
+          "details": {
+            "description": "額外錯誤資訊",
+            "type": "object"
+          }
+        }
+      },
+      "Success": {
+        "title": "Success Response",
+        "description": "當 API 回傳成功時的 object",
+        "properties": {
+          "data": {},
+          "metadata": {
+            "type": "object"
+          }
+        },
+        "type": "object"
+      },
+      "Show": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/Success"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "data": {
+                "type": "array",
+                "items": {
+                  "properties": {
+                    "columnList": {
+                      "type": "array",
+                      "description": "履歷呈現欄位\n\n| 代號 | 描述 |\n| --- | --- |\n| 1 | 照片與摘要 |\n| 2 | 應徵資訊 |\n| 3 | 工作經歷 |\n| 4 | 教育背景 |\n| 5 | 個人資料 |\n| 6 | 求職條件 |\n| 7 | 語言能力 |\n| 8 | 技能專長 |\n| 9 | 自傳 |\n| 10 | 附件 |\n| 11 | 推薦人 |\n| 12 | 使用紀錄 |\n| 14 | 作品 |\n| 15 | 符合分析 |",
+                      "items": {
+                        "type": "integer",
+                        "enum": [
+                          1,
+                          2,
+                          3,
+                          4,
+                          5,
+                          6,
+                          7,
+                          8,
+                          9,
+                          10,
+                          11,
+                          12,
+                          14,
+                          15
+                        ]
+                      },
+                      "example": [
+                        1,
+                        3,
+                        5,
+                        7,
+                        9,
+                        11,
+                        15
+                      ]
+                    },
+                    "fontSize": {
+                      "type": "integer",
+                      "description": "字級大小\n\n| 代號 | 描述 |\n| --- | --- |\n| 1 | 大 |\n| 2 | 中 |\n| 3 | 小 |",
+                      "enum": [
+                        1,
+                        2,
+                        3
+                      ],
+                      "example": 2
+                    },
+                    "isMulti": {
+                      "type": "integer",
+                      "description": "列印設定\n\n| 代號 | 描述 |\n| --- | --- |\n| 1 | 接續列印 |\n| 2 | 分頁列印 |",
+                      "enum": [
+                        1,
+                        2
+                      ],
+                      "example": 1
+                    }
+                  }
+                }
+              }
+            }
+          }
+        ]
+      },
+      "Unauthorized": {
+        "title": "Unauthorized Response",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/Error"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "code": {
+                "type": "string",
+                "default": "00005",
+                "enum": [
+                  "00005"
+                ]
+              },
+              "message": {
+                "type": "string",
+                "example": "目前為尚未登入狀態，請重新登入"
+              }
+            }
+          }
+        ]
+      },
+      "ResumeSearchBase": {
+        "title": "ResumeSearchBase",
+        "type": "object",
+        "properties": {
+          "updateDateType": {
+            "type": "string",
+            "description": "履歷更新日\n\n1：不拘\n\n2：本日最新\n\n3：三天內\n\n4：一週內\n\n5：兩週內\n\n6：一個月內\n\n7：二個月內\n\n8：三個月內",
+            "enum": [
+              "1",
+              "2",
+              "3",
+              "4",
+              "5",
+              "6",
+              "7",
+              "8"
+            ],
+            "example": "1"
+          },
+          "jobCategory": {
+            "type": "array",
+            "description": "希望職務列表\n\nref: https://static.104.com.tw/category-tool/xml/newfunction01.xml",
+            "maxItems": 200,
+            "uniqueItems": true,
+            "example": [
+              "2008001016",
+              "2008001017"
+            ],
+            "items": {
+              "type": "string",
+              "description": "希望職務 (代碼)",
+              "pattern": "^\\d+$",
+              "example": "2008001017"
+            }
+          },
+          "city": {
+            "type": "array",
+            "description": "希望工作地列表\n\nref: https://static.104.com.tw/category-tool/xml/newfunction01.xml",
+            "maxItems": 200,
+            "uniqueItems": true,
+            "example": [
+              "6001001000",
+              "6001002000"
+            ],
+            "items": {
+              "type": "string",
+              "description": "希望工作地（代碼)",
+              "pattern": "^\\d+$",
+              "example": "6001002000"
+            }
+          },
+          "home": {
+            "type": "array",
+            "description": "居住地列表",
+            "maxItems": 200,
+            "uniqueItems": true,
+            "example": [
+              "6001001000",
+              "6001002000"
+            ],
+            "items": {
+              "type": "string",
+              "description": "居住地 (代碼)",
+              "pattern": "^\\d+$",
+              "example": "6001002000"
+            }
+          },
+          "ec": {
+            "type": "string",
+            "description": "ec 參數",
+            "example": "1"
+          },
+          "fixedUpdateDate": {
+            "type": "string",
+            "description": "固定查詢列表的日期，避免線上履歷開開關關造成重複履歷用的參數",
+            "example": "20210807233317"
+          },
+          "page": {
+            "type": "integer",
+            "description": "第幾頁，預設為第 1 頁",
+            "example": 1,
+            "default": 1
+          },
+          "pageSize": {
+            "type": "integer",
+            "description": "每頁幾筆，預設為 50 筆，最大上限 1000 筆",
+            "example": 50,
+            "default": 50,
+            "maximum": 1000
+          }
+        }
+      },
+      "ResumeListItemBase": {
+        "type": "object",
+        "properties": {
+          "hasInRecruitFlow": {
+            "type": "boolean",
+            "description": "是否已在任一職務的工作流程中",
+            "example": true
+          },
+          "age": {
+            "type": "integer",
+            "description": "年齡",
+            "example": 22
+          },
+          "areaDesc": {
+            "type": "string",
+            "description": "居住地",
+            "example": "新北市新店區"
+          },
+          "eduDesc": {
+            "type": "string",
+            "description": "教育程度",
+            "example": "博士畢業 台北城市科技大學 國術學系"
+          },
+          "expJobArr": {
+            "type": "array",
+            "description": "工作經歷",
+            "items": {
+              "type": "object",
+              "properties": {
+                "coSizeDesc": {
+                  "type": "string",
+                  "description": "公司規模",
+                  "example": "1~30人"
+                },
+                "companyVisibility": {
+                  "type": "boolean",
+                  "description": "是否顯示公司名稱",
+                  "example": true
+                },
+                "expEnd": {
+                  "type": "string",
+                  "description": "離職日（search resume date format：Y/m/d, snapshot date formate：Y-m-d h:m:s）",
+                  "example": "2021/04/01"
+                },
+                "expEndDesc": {
+                  "type": "string",
+                  "description": "任職期間長度（若尚未結束會顯示仍在職）",
+                  "example": "1年3個月"
+                },
+                "expFirm": {
+                  "type": "string",
+                  "description": "任職公司",
+                  "example": "104"
+                },
+                "expFirmLogo": {
+                  "type": "string",
+                  "description": "任職公司 logo",
+                  "example": "https://xxx.logo_url"
+                },
+                "expIndDesc": {
+                  "type": "string",
+                  "description": "產業類別",
+                  "example": "鞋類／布類／服飾品批發業"
+                },
+                "expJobDesc": {
+                  "type": "string",
+                  "description": "職務名稱",
+                  "example": "市場調查／市場分析"
+                },
+                "expJobNote": {
+                  "type": "string",
+                  "description": "工作描述",
+                  "example": "開會, 發報告, 分派工作"
+                },
+                "expJobSkill": {
+                  "type": "array",
+                  "description": "職務標籤",
+                  "items": {
+                    "type": "string"
+                  },
+                  "example": [
+                    "資訊設備環境設定",
+                    "伺服器網站管理維護",
+                    "資訊設備操作檢修",
+                    "資料備份與復原",
+                    "作業系統基本操作",
+                    "安裝與維護網路安全系統"
+                  ]
+                },
+                "expJobSkillDesc": {
+                  "type": "string",
+                  "description": "工作技能",
+                  "example": "資訊設備環境設定、伺服器網站管理維護、資訊設備操作檢修、資料備份與復原、作業系統基本操作、安裝與維護網路安全系統"
+                },
+                "expManagementDesc": {
+                  "type": "string",
+                  "description": "管理責任",
+                  "example": "需負擔管理責任，且直接管理人數約13人以上"
+                },
+                "expPeriod": {
+                  "type": "string",
+                  "description": "總年資",
+                  "example": "2018/05~2021/06"
+                },
+                "expStart": {
+                  "type": "string",
+                  "description": "入職日 (search resume date format：Y/m/d, snapshot date formate：Y-m-d h:m:s）",
+                  "example": "2018/05/01"
+                },
+                "expTitle": {
+                  "type": "string",
+                  "description": "職務名稱",
+                  "example": "產品經理"
+                },
+                "expWage": {
+                  "type": "string",
+                  "description": "薪資數目",
+                  "example": "150000"
+                },
+                "expWageDesc": {
+                  "type": "string",
+                  "description": "薪資描述",
+                  "example": "月薪150,000元/年薪2,500,000元"
+                },
+                "expWageTypeDesc": {
+                  "type": "string",
+                  "description": "薪資制度（日薪、月薪、年薪、論件計酬等等）",
+                  "example": "月薪"
+                },
+                "expWageYear": {
+                  "type": "string",
+                  "description": "年薪資數目",
+                  "example": "2500000"
+                }
+              }
+            }
+          },
+          "expPeriodDesc": {
+            "type": "string",
+            "description": "工作年資",
+            "example": "25年(含)以上工作經驗"
+          },
+          "hunterStatus": {
+            "type": "object",
+            "description": "獵派履歷狀態",
+            "properties": {
+              "action": {
+                "type": "integer",
+                "description": "action 代碼（1：看完整履歷, 2：扣點看完整履歷, 3：聯絡索取完整履歷, 4：有預扣紀錄，semion再次聯絡）",
+                "example": 1
+              },
+              "snapshotId": {
+                "type": "string",
+                "description": "snapshot ID",
+                "example": "202069"
+              },
+              "jobNo": {
+                "type": "string",
+                "description": "職務代碼",
+                "example": "12345567"
+              },
+              "type": {
+                "type": "string",
+                "description": "履歷狀態（hunter：正常獵派線上履歷, apply：60天內主應履歷）",
+                "example": "hunter"
+              }
+            }
+          },
+          "idNo": {
+            "type": "string",
+            "description": "履歷代碼",
+            "example": "3781639104861"
+          },
+          "pid": {
+            "type": "string",
+            "description": "會員中心 PK",
+            "example": "256711"
+          },
+          "isContact": {
+            "type": "boolean",
+            "description": "是否已聯絡",
+            "example": false
+          },
+          "isSave": {
+            "type": "boolean",
+            "description": "是否已儲存",
+            "example": false
+          },
+          "latestMemo": {
+            "type": "string",
+            "description": "最新一筆備註（使用者備註）",
+            "example": "這是一筆備註測試"
+          },
+          "masterUrlQuery": {
+            "type": "string",
+            "description": "詳細頁連結 Query",
+            "example": "idno=3781639100993&sn=1&path_for_log=list_search&ec=104&search_meta=%7B%22page%22%3A1%2C%22fixed_update_date%22%3A20210825160352%2C%22total_hit%22%3A3%7D&formId=contactPrivacy%3D0%26jobcat%3D2003000000%26city%3D6001002000%26home%3D6001002000%26period%3D-1%26period_high%3D98%26sex%3D2%26role_now%3D0%26switch_date_type%3D1"
+          },
+          "otherCourse": {
+            "type": "array",
+            "description": "職涯進修文案",
+            "items": {
+              "type": "object",
+              "properties": {
+                "link": {
+                  "type": "string",
+                  "description": "修業證明連結",
+                  "nullable": true,
+                  "default": null,
+                  "example": null
+                },
+                "linkName": {
+                  "type": "string",
+                  "description": "修業證明名稱",
+                  "nullable": true,
+                  "default": null,
+                  "example": "修業證明"
+                },
+                "description": {
+                  "type": "string",
+                  "description": "文案",
+                  "example": "在經濟部外貿協會 國際企業人才培訓中心 (ITI)，完成人才培訓課程。"
+                },
+                "hasMask": {
+                  "type": "boolean",
+                  "description": "是否有遮罩",
+                  "example": false
+                }
+              }
+            }
+          },
+          "personalPic": {
+            "type": "string",
+            "description": "求職者照片",
+            "example": "https://static.104-dev.com.tw/104main/vipphp/main/img/head/photo_man_85x108.png"
+          },
+          "lastActionDateDesc": {
+            "description": "最近活動日",
+            "type": "string",
+            "example": "超過30天沒有求職活動"
+          },
+          "readStatus": {
+            "type": "boolean",
+            "description": "履歷表讀取狀態",
+            "example": false
+          },
+          "remark": {
+            "type": "array",
+            "description": "履歷歷程",
+            "items": {
+              "type": "string"
+            },
+            "example": [
+              "2021/08/02 11:52 應徵 大陸工作測試",
+              "2021/07/30 15:55 應徵 大陸工作測試"
+            ]
+          },
+          "resumeType": {
+            "type": "string",
+            "description": "履歷類型（1：線上履歷, 2：簡歷）",
+            "example": "1"
+          },
+          "resumeVersion": {
+            "type": "string",
+            "description": "履歷版本",
+            "example": "2"
+          },
+          "sex": {
+            "type": "integer",
+            "description": "性別:\n\n- 0: 女\n- 1: 男\n- 2: 其他",
+            "enum": [
+              0,
+              1,
+              2
+            ],
+            "example": 1
+          },
+          "switchStatusView": {
+            "type": "integer",
+            "description": "履歷狀態\n\n1：全顯\n2：履歷接觸時設定為 semi-on 半顯\n3：履歷接觸時，公司為傳、保、殯，semi-on 半顯 (已棄用)\n4：off 半顯 (已棄用)\n5：無權限",
+            "enum": [
+              1,
+              2,
+              3,
+              4,
+              5
+            ],
+            "example": "1"
+          },
+          "titleCatDesc": {
+            "type": "string",
+            "description": "希望職務名稱",
+            "example": "業務"
+          },
+          "updateDate": {
+            "type": "integer",
+            "example": 1607011200,
+            "description": "更新日 (Unix time format)",
+            "format": "int32"
+          },
+          "userName": {
+            "type": "string",
+            "description": "求職者姓名",
+            "example": "歐陽基寬"
+          },
+          "cityNoDesc": {
+            "type": "string",
+            "description": "希望工作地",
+            "example": "台北市、新北市"
+          },
+          "contactPrivacy": {
+            "description": "電話隱碼",
+            "type": "string",
+            "enum": [
+              "disabled",
+              "public",
+              "private"
+            ],
+            "example": "public"
+          },
+          "isTalent50": {
+            "type": "boolean",
+            "description": "是否為 Talent50 履歷",
+            "example": false
+          }
+        }
+      },
+      "ResumeListBase": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ResumeListItemBase"
+            }
+          }
+        }
+      },
+      "ResumeListMetadataBase": {
+        "type": "object",
+        "properties": {
+          "blackJobCat": {
+            "type": "array",
+            "description": "取得黑名單職務（代號）",
+            "items": {
+              "type": "string"
+            },
+            "example": [
+              "2006003002",
+              "2003001001",
+              "2018002014",
+              "2018002001",
+              "2005001001",
+              "2003002018",
+              "2008002001"
+            ]
+          },
+          "browseLimit": {
+            "type": "object",
+            "description": "瀏覽限制",
+            "properties": {
+              "onThatDayCount": {
+                "type": "string",
+                "description": "今日已瀏覽數量",
+                "example": "0"
+              },
+              "resumeMax": {
+                "type": "string",
+                "description": "可瀏覽履歷數上限",
+                "example": "2200"
+              }
+            }
+          },
+          "ec": {
+            "type": "string",
+            "description": "ec 參數",
+            "example": "103"
+          },
+          "fixedUpdateDate": {
+            "type": "string",
+            "description": "固定查詢列表的日期，避免線上履歷開開關關造成重複履歷用的參數",
+            "example": "20210807233317"
+          },
+          "hasOnJob": {
+            "type": "boolean",
+            "description": "是否有on職缺",
+            "example": true
+          },
+          "page": {
+            "type": "integer",
+            "description": "目前頁數",
+            "default": 1,
+            "example": 1
+          },
+          "pageSize": {
+            "type": "integer",
+            "description": "每頁筆數",
+            "default": 50,
+            "example": 50
+          },
+          "totalPage": {
+            "type": "integer",
+            "description": "查詢結果總頁數",
+            "example": 6
+          },
+          "total": {
+            "type": "integer",
+            "description": "查詢結果總筆數",
+            "example": 550
+          }
+        }
+      },
+      "Search": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/Success"
+          },
+          {
+            "$ref": "#/components/schemas/ResumeListBase"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "metadata": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/ResumeListMetadataBase"
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "hasFollow": {
+                        "type": "boolean",
+                        "description": "關注數是否大於 0",
+                        "example": true
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        ]
+      },
+      "ValidationError": {
+        "title": "Validation Error Response",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/Error"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "code": {
+                "type": "string",
+                "default": "00004",
+                "enum": [
+                  "00004"
+                ]
+              },
+              "message": {
+                "type": "string",
+                "example": "帶入內容驗證失敗"
+              }
+            }
+          }
+        ]
+      },
+      "NotFound": {
+        "title": "Not Found Response",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/Error"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "code": {
+                "type": "string",
+                "default": "00001",
+                "enum": [
+                  "00001"
+                ]
+              },
+              "message": {
+                "type": "string",
+                "example": "找不到對應資源"
+              }
+            }
+          }
+        ]
+      },
+      "InternalServerError": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/Error"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "code": {
+                "type": "string",
+                "enum": [
+                  "0"
+                ],
+                "default": "0"
+              },
+              "message": {
+                "type": "string",
+                "example": "系統忙碌中，請稍後再試"
+              }
+            }
+          }
+        ],
+        "title": "Internal Server Error Response"
+      },
+      "FarmToken": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/Success"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "data": {
+                "type": "object",
+                "properties": {
+                  "token": {
+                    "type": "string",
+                    "description": "關鍵人才庫(農場)關注公司履歷 iframe 的 Token",
+                    "example": "1f9cb423411b9edfdbb75e78026eac5201eb22f86592905153d36aa2df42f8423"
+                  }
+                }
+              }
+            }
+          }
+        ]
+      },
+      "Recommend": {
+        "title": "KeyJobsRecommend",
+        "type": "object",
+        "required": [
+          "jobNos"
+        ],
+        "properties": {
+          "jobNos": {
+            "type": "array",
+            "description": "重點職務編號列表（最多 5 筆，每筆最多回傳 3 筆履歷）",
+            "maxItems": 5,
+            "uniqueItems": true,
+            "example": [
+              "12345678",
+              "87654321"
+            ],
+            "items": {
+              "type": "string",
+              "description": "職務編號",
+              "pattern": "^\\d+$",
+              "example": "12345678"
+            }
+          }
+        }
+      },
+      "Recommend-2": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/Success"
+          },
+          {
+            "$ref": "#/components/schemas/ResumeListBase"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "data": {
+                "type": "array",
+                "items": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ResumeListItemBase"
+                    },
+                    {
+                      "type": "object",
+                      "required": [
+                        "pddScore"
+                      ],
+                      "properties": {
+                        "jobNo": {
+                          "type": "string",
+                          "description": "職務編號",
+                          "example": "12345678"
+                        },
+                        "pddScore": {
+                          "type": "number",
+                          "description": "履歷的餘弦相似度",
+                          "example": 0.6946753
+                        }
+                      }
+                    }
+                  ]
+                }
+              },
+              "metadata": {
+                "type": "object",
+                "properties": {
+                  "blackJobCat": {
+                    "type": "array",
+                    "description": "取得黑名單職務（代號）",
+                    "items": {
+                      "type": "string"
+                    },
+                    "example": [
+                      "2006003002",
+                      "2003001001"
+                    ]
+                  },
+                  "browseLimit": {
+                    "type": "object",
+                    "description": "瀏覽限制",
+                    "properties": {
+                      "onThatDayCount": {
+                        "type": "string",
+                        "description": "今日已瀏覽數量",
+                        "example": "0"
+                      },
+                      "resumeMax": {
+                        "type": "string",
+                        "description": "可瀏覽履歷數上限",
+                        "example": "2200"
+                      }
+                    }
+                  },
+                  "ec": {
+                    "type": "string",
+                    "description": "ec 參數",
+                    "example": "103"
+                  },
+                  "fixedUpdateDate": {
+                    "type": "string",
+                    "description": "固定查詢列表的日期，避免線上履歷開開關關造成重複履歷用的參數",
+                    "example": "20210807233317"
+                  },
+                  "hasOnJob": {
+                    "type": "boolean",
+                    "description": "是否有on職缺",
+                    "example": true
+                  },
+                  "total": {
+                    "type": "integer",
+                    "description": "查詢結果總筆數",
+                    "example": 6
+                  },
+                  "nlpSearchRemaining": {
+                    "type": "integer",
+                    "description": "今日剩餘 NLP 搜尋次數",
+                    "example": 95
+                  }
+                }
+              }
+            }
+          }
+        ]
+      },
+      "CompanySwitchOff": {
+        "title": "Company Switch Off Response",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/Error"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "code": {
+                "type": "string",
+                "default": "00202",
+                "enum": [
+                  "00202"
+                ]
+              },
+              "message": {
+                "type": "string",
+                "example": "公司帳號尚未開通，無法使用此功能"
+              }
+            }
+          }
+        ]
+      },
+      "Search-2": {
+        "title": "NLPSearch",
+        "type": "object",
+        "properties": {
+          "query": {
+            "type": "string",
+            "description": "NLP 搜尋查詢文字。jobNo 與 token 皆未提供時必填。",
+            "minLength": 1,
+            "maxLength": 500,
+            "example": "具有 3 年以上 Python 開發經驗的後端工程師"
+          },
+          "jobNo": {
+            "type": "string",
+            "description": "職務編號",
+            "pattern": "^\\d+$",
+            "example": "12345678"
+          },
+          "token": {
+            "type": "string",
+            "description": "token 第二頁時必填",
+            "example": "asdf91893"
+          },
+          "plastActionDateType": {
+            "description": "履歷最近活動日\n- 1: 不拘\n- 2: 1天內\n- 3: 3天內\n- 4: 5天內\n- 5: 7天內\n- 6: 14天內\n- 7: 21天內\n- 8: 30天內\n",
+            "type": "integer",
+            "enum": [
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7,
+              8
+            ],
+            "example": 1,
+            "default": 1
+          },
+          "updateDateType": {
+            "description": "履歷更新區間\n- 1: 不拘\n- 2: 本日最新\n- 3: 三日內\n- 4: 一週內\n- 5: 兩週內\n- 6: 一個月內\n- 7: 兩個月內\n- 8: 三個月內\n",
+            "type": "integer",
+            "enum": [
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7,
+              8
+            ],
+            "example": 1,
+            "default": 1
+          },
+          "contactPrivacy": {
+            "description": "Email 及聯絡電話\n- 0: 不拘\n- 1: 可直接Email與電話聯繫",
+            "type": "integer",
+            "enum": [
+              0,
+              1
+            ],
+            "example": 0,
+            "default": 0
+          },
+          "page": {
+            "description": "頁碼",
+            "type": "integer",
+            "default": 1,
+            "minimum": 1,
+            "example": 1
+          },
+          "pageSize": {
+            "description": "每頁筆數",
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 5,
+            "default": 5,
+            "example": 5
+          },
+          "fixedUpdateDate": {
+            "description": "固定查詢列表的日期（unix time format）。若未提供，則使用當前時間。",
+            "type": "integer",
+            "example": 1718035200
+          }
+        }
+      },
+      "Search-3": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/Success"
+          },
+          {
+            "$ref": "#/components/schemas/ResumeListBase"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "data": {
+                "type": "array",
+                "items": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ResumeListItemBase"
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "pddScore": {
+                          "type": "number",
+                          "description": "履歷的餘弦相似度",
+                          "example": 0.6946753
+                        }
+                      },
+                      "required": [
+                        "pddScore"
+                      ]
+                    }
+                  ]
+                }
+              },
+              "metadata": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/ResumeListMetadataBase"
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "token": {
+                        "type": "string",
+                        "description": "token",
+                        "example": "asdf91893"
+                      },
+                      "conditions": {
+                        "type": "array",
+                        "description": "condition names",
+                        "items": {
+                          "type": "string"
+                        },
+                        "example": [
+                          "台大資工畢業",
+                          "軟體工程經歷兩年以上",
+                          "Vue"
+                        ]
+                      },
+                      "garId": {
+                        "type": "string",
+                        "description": "GAR ID (Embedding ID)",
+                        "example": "gar-12345678"
+                      },
+                      "pr": {
+                        "type": "string",
+                        "description": "百分位數等級",
+                        "example": "PR95"
+                      },
+                      "totalHits": {
+                        "type": "integer",
+                        "description": "積極度百分位數計算前的原始符合總筆數",
+                        "example": 796152
+                      },
+                      "nlpSearchRemaining": {
+                        "type": "integer",
+                        "description": "今日剩餘 NLP 搜尋次數",
+                        "example": 95
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        ]
+      },
+      "SearchLimitReached": {
+        "title": "Search Limit Reached Error Response",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/Error"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "code": {
+                "type": "string",
+                "default": "00602",
+                "enum": [
+                  "00602"
+                ]
+              },
+              "message": {
+                "type": "string",
+                "example": "今日履歷搜尋次數已達上限"
+              }
+            }
+          }
+        ]
+      },
+      "PromptInjectionDetected": {
+        "title": "Prompt Injection Detected Response",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/Error"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "code": {
+                "type": "string",
+                "default": "00601",
+                "enum": [
+                  "00601"
+                ]
+              },
+              "message": {
+                "type": "string",
+                "example": "輸入內容含有提示詞注入風險，請重新輸入"
+              }
+            }
+          }
+        ]
+      },
+      "Highlights": {
+        "title": "NLPHighlights",
+        "type": "object",
+        "properties": {
+          "token": {
+            "type": "string",
+            "description": "NLP 搜尋 token (token 與 jobNo 其中一項必填)",
+            "example": "asdf91893"
+          },
+          "jobNo": {
+            "type": "string",
+            "description": "job no (token 與 jobNo 其中一項必填)",
+            "example": "8352660"
+          }
+        }
+      },
+      "Highlights-2": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/Success"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "data": {
+                "type": "array",
+                "description": "履歷亮點列表",
+                "items": {
+                  "type": "string"
+                },
+                "example": [
+                  "累積九年前端經驗懂 VUE",
+                  "擔任過 Tech Lead，帶領 5 人團隊"
+                ]
+              }
+            }
+          }
+        ]
+      },
+      "Show-2": {
+        "title": "Show Response",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/Success"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "data": {
+                "description": "視訊面談資訊",
+                "type": "object",
+                "properties": {
+                  "picUrl": {
+                    "type": "string",
+                    "description": "求職者大頭照",
+                    "example": "https://static.104-dev.com.tw/104main/vipphp/main/img/head/photo_man_85x108.png"
+                  },
+                  "cUserName": {
+                    "type": "string",
+                    "description": "C的用戶名稱",
+                    "default": "",
+                    "example": "王小明"
+                  }
+                }
+              },
+              "metadata": {
+                "type": "object"
+              }
+            }
+          }
+        ]
+      },
+      "Store": {
+        "type": "object",
+        "title": "Folder Resume Store Request",
+        "required": [
+          "resumes"
+        ],
+        "properties": {
+          "resumes": {
+            "type": "array",
+            "description": "履歷列表（最多 50 筆）",
+            "minItems": 1,
+            "maxItems": 50,
+            "items": {
+              "type": "object",
+              "required": [
+                "id",
+                "source"
+              ],
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "pattern": "^\\d+$",
+                  "description": "線上履歷 idNo 或 快照履歷 snapshotId",
+                  "example": "123456"
+                },
+                "source": {
+                  "type": "string",
+                  "description": "履歷來源\n- searchEngine: 線上履歷\n- document: 儲存履歷\n- apply: 應徵履歷\n- hunter: 獵派履歷\n",
+                  "enum": [
+                    "searchEngine",
+                    "document",
+                    "apply",
+                    "hunter"
+                  ],
+                  "example": "searchEngine"
+                }
+              }
+            },
+            "example": [
+              {
+                "id": "3781639125015",
+                "source": "searchEngine"
+              },
+              {
+                "id": "266018",
+                "source": "apply"
+              }
+            ]
+          },
+          "duplicateStrategy": {
+            "type": "string",
+            "description": "重複儲存處理方式\n- skip: 跳過重複\n- allow: 允許重複\n- prompt: 詢問（預設）\n",
+            "enum": [
+              "skip",
+              "allow",
+              "prompt"
+            ],
+            "default": "prompt",
+            "example": "prompt"
+          }
+        }
+      },
+      "Store-2": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/Success"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "data": {
+                "type": "array",
+                "description": "履歷儲存結果列表",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "pattern": "^\\d+$",
+                      "description": "線上履歷 idNo 或 快照履歷 snapshotId",
+                      "example": "123456"
+                    },
+                    "source": {
+                      "type": "string",
+                      "description": "履歷來源\n- searchEngine: 線上履歷\n- document: 儲存履歷\n- apply: 應徵履歷\n- hunter: 獵派履歷\n",
+                      "enum": [
+                        "searchEngine",
+                        "document",
+                        "apply",
+                        "hunter"
+                      ],
+                      "example": "searchEngine"
+                    },
+                    "savedSnapshotId": {
+                      "type": "string",
+                      "pattern": "^\\d+$",
+                      "description": "儲存成功的 snapshotId（null 代表未儲存）",
+                      "example": "888888"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        ]
+      },
+      "BrowseLimitReached": {
+        "title": "Browse Limit Reached Response",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/Error"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "code": {
+                "type": "string",
+                "default": "00401",
+                "enum": [
+                  "00401"
+                ]
+              },
+              "message": {
+                "type": "string",
+                "example": "今日履歷查詢數已達上限100筆"
+              }
+            }
+          }
+        ]
+      },
+      "FolderResumeLimitReached": {
+        "title": "Folder Resume Limit Reached Response",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/Error"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "code": {
+                "type": "string",
+                "default": "00602",
+                "enum": [
+                  "00602"
+                ]
+              },
+              "message": {
+                "type": "string",
+                "example": "儲存履歷數量已達上限"
+              },
+              "details": {
+                "type": "object",
+                "properties": {
+                  "max": {
+                    "type": "integer",
+                    "example": 300
+                  },
+                  "used": {
+                    "type": "integer",
+                    "example": 299
+                  }
+                }
+              }
+            }
+          }
+        ]
+      },
+      "FeatureForbidden": {
+        "title": "Forbidden Response",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/Error"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "code": {
+                "type": "string",
+                "default": "00008",
+                "enum": [
+                  "00008"
+                ]
+              },
+              "message": {
+                "type": "string",
+                "default": "此功能您尚無權限使用，請洽貴公司主要人事聯絡人開放權限"
+              }
+            }
+          }
+        ]
+      },
+      "JobUnauthorizedPermission": {
+        "title": "Job Unauthorized Permission Response",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/Error"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "code": {
+                "type": "string",
+                "default": "00502",
+                "enum": [
+                  "00502"
+                ]
+              },
+              "message": {
+                "type": "string",
+                "default": "此職務您尚無權限使用，請洽貴公司主要人事聯絡人開放權限"
+              }
+            }
+          }
+        ]
+      },
+      "ResumeAccessForbidden": {
+        "title": "Resume Access Forbidden Response",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/Error"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "code": {
+                "type": "string",
+                "default": "00402",
+                "enum": [
+                  "00402"
+                ]
+              },
+              "message": {
+                "type": "string",
+                "example": "履歷無法存取"
+              }
+            }
+          }
+        ]
+      },
+      "DuplicateFolderResume": {
+        "title": "Duplicate Folder Resume Response",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/Error"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "code": {
+                "type": "string",
+                "default": "00601",
+                "enum": [
+                  "00601"
+                ]
+              },
+              "message": {
+                "type": "string",
+                "example": "重複儲存，資料夾中已存在相同履歷"
+              },
+              "details": {
+                "type": "array",
+                "description": "重複儲存的履歷清單",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "pattern": "^\\d+$",
+                      "description": "線上履歷 idNo 或 快照履歷 snapshotId",
+                      "example": "123456"
+                    },
+                    "source": {
+                      "type": "string",
+                      "description": "履歷來源\n- searchEngine: 線上履歷\n- document: 儲存履歷\n- apply: 應徵履歷\n- hunter: 獵派履歷\n",
+                      "enum": [
+                        "searchEngine",
+                        "document",
+                        "apply",
+                        "hunter"
+                      ],
+                      "example": "searchEngine"
+                    }
+                  }
+                },
+                "example": [
+                  {
+                    "id": "3781639125015",
+                    "source": "searchEngine"
+                  },
+                  {
+                    "id": "266018",
+                    "source": "apply"
+                  }
+                ]
+              }
+            }
+          }
+        ]
+      }
+    },
+    "parameters": {
+      "AdditionalInfo": {
+        "name": "104vip-Additional-Info",
+        "in": "header",
+        "description": "傳遞訊息需 url encode。傳遞參數:\n- Cust-No={公司編號} (optional, required when Vip-Login-No is not given)\n- Vip-Login-No={Vip 帳號編號} (optional, required when Cust-No is not given)\n- Vip-Login-Csr-No={代登專員 ID(emp_no)} (optional)\n- Vip-Csr-Login-Name={代登專員姓名} (optional)",
+        "required": true,
+        "schema": {
+          "type": "string"
+        },
+        "example": "Vip-Login-No=123456&Vip-Login-Csr-No=1&Vip-Csr-Login-Name=XXX"
+      }
+    }
+  }
+}
