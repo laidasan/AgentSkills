@@ -40,7 +40,7 @@
 ## 當前子任務（VIPOP-42892）
 
 > 查詢時間：2026/03/20 15:30
-> 篩選狀態：Open, In Sprint, In Progress, In Testing, Reopen
+> 篩選狀態：Open, In Sprint, In Progress, In Testing, Reopen, Dev done
 > 子任務數量：23 筆
 
 | Key | Summary | Status | Assignee | Type | Type Reason | Created | Updated |
@@ -99,7 +99,7 @@
 |---|---|
 | Key | Jira issue key |
 | Summary | issue 標題 |
-| Status | 目前狀態（僅顯示 Open / In Sprint / In Progress / In Testing / Reopen） |
+| Status | 目前狀態（僅顯示 Open / In Sprint / In Progress / In Testing / Reopen / Dev done） |
 | Assignee | 指派人（未指派時顯示「未指派」） |
 | Type | 前端 / 後端 / 不確定 |
 | Type Reason | 分類的判斷依據 |

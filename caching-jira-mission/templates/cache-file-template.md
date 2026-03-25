@@ -34,7 +34,7 @@ issues:
 ## 當前子任務（VIPOP-44083）
 
 > 查詢時間：2026/03/20 15:30
-> 篩選狀態：Open, In Sprint, In Progress, In Testing, Reopen
+> 篩選狀態：Open, In Sprint, In Progress, In Testing, Reopen, Dev done
 > 子任務數量：2 筆
 
 | Key | Summary | Status | Assignee | Type | Type Reason | Created | Updated |

@@ -31,7 +31,7 @@ Step 2 和 Step 3 皆不依賴彼此的結果，且 parent-task-key 來自使用
 呼叫 `mcp__claude_ai_Atlassian__searchJiraIssuesUsingJql`：
 
 - **cloudId**: Step 1 取得的值
-- **jql**: `parent = {parent-task-key} AND status in ("Open","In Sprint","In Progress","In Testing","Reopen")`
+- **jql**: `parent = {parent-task-key} AND status in ("Open","In Sprint","In Progress","In Testing","Reopen","Dev done")`
 - **fields**: `["summary","status","description","assignee","created","updated"]`
 - **maxResults**: `100`
 - **responseContentFormat**: `"markdown"`
@@ -98,7 +98,7 @@ node {skill-base-directory}/scripts/parse-cache.cjs "./jiraIssuesCaching/{parent
 ## 當前子任務（{parent-task-key}）
 
 > 查詢時間：{當前時間 YYYY/MM/DD HH:mm}
-> 篩選狀態：Open, In Sprint, In Progress, In Testing, Reopen
+> 篩選狀態：Open, In Sprint, In Progress, In Testing, Reopen, Dev done
 > 子任務數量：{數量} 筆
 
 | Key | Summary | Status | Assignee | Type | Type Reason | Created | Updated |
