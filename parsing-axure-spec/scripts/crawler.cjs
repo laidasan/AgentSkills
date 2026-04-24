@@ -84,13 +84,58 @@ async function login(page, url, password) {
 }
 async function fetchPageList(page) {
   return page.evaluate(() => {
-    const links = document.querySelectorAll("a.sitemapPageLink[nodeurl]");
-    return Array.from(links).map((a, index) => ({
-      index: index + 1,
-      name: a.querySelector(".sitemapPageName")?.textContent.trim() || a.textContent.trim(),
-      nodeurl: a.getAttribute("nodeurl")
-    }));
+    let counter = 0;
+    function parseNodes(ul, depth) {
+      const results = [];
+      if (!ul) return results;
+      const lis = Array.from(ul.children).filter((el) => el.tagName === "LI");
+      for (const li of lis) {
+        const link = li.querySelector(":scope > div a.sitemapPageLink[nodeurl]");
+        const folderName = !link ? li.querySelector(":scope > div .sitemapPageName")?.textContent.trim() : null;
+        const childUl = li.querySelector(":scope > ul");
+        if (link) {
+          counter++;
+          const node = {
+            index: counter,
+            name: link.querySelector(".sitemapPageName")?.textContent.trim() || link.textContent.trim(),
+            nodeurl: link.getAttribute("nodeurl"),
+            depth
+          };
+          if (childUl) {
+            node.children = parseNodes(childUl, depth + 1);
+          }
+          results.push(node);
+        } else if (folderName) {
+          const node = {
+            index: null,
+            name: folderName,
+            nodeurl: null,
+            depth,
+            isFolder: true
+          };
+          if (childUl) {
+            node.children = parseNodes(childUl, depth + 1);
+          }
+          results.push(node);
+        }
+      }
+      return results;
+    }
+    const rootUl = document.querySelector("ul.sitemapTree");
+    return parseNodes(rootUl, 0);
   });
+}
+function flattenPages(nodes) {
+  const result = [];
+  for (const node of nodes) {
+    if (node.nodeurl) {
+      result.push({ index: node.index, name: node.name, nodeurl: node.nodeurl, depth: node.depth });
+    }
+    if (node.children) {
+      result.push(...flattenPages(node.children));
+    }
+  }
+  return result;
 }
 async function getContentSize(page) {
   const frames = page.frames();
@@ -135,7 +180,8 @@ async function runPages() {
   const context = await browser.newContext({ viewport: { width: 1440, height: 900 } });
   const page = await context.newPage();
   await login(page, TARGET_URL, PASSWORD);
-  const allPages = await fetchPageList(page);
+  const tree = await fetchPageList(page);
+  const allPages = flattenPages(tree);
   const selectedPages = allPages.filter(
     (p) => pageArgs.some((arg) => /^\d+$/.test(arg) ? p.index === Number(arg) : p.name.includes(arg))
   );
