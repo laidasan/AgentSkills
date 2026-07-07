@@ -1,15 +1,12 @@
 ---
 name: analyst-system
 description: >
-  Executes the SA (System Analysis) workflow: analyzes existing codebase,
-  compares old/new specs, produces SA documents, Design documents (with
-  ClassDiagram/SequenceDiagram), and Task breakdowns.
-  Use this skill whenever the user wants to: start system analysis for a new
-  feature or module, analyze how a new spec impacts existing code, produce
-  architecture design from a spec, break down a feature spec into
-  implementation tasks, or do any SA/Design/Task pipeline work. Triggers on
-  phrases like "系統分析", "SA workflow", "分析這個新功能", "規格拆成 Task",
-  "幫我做 SA", "Design 文件", "架構設計".
+  Internal SA (System Analysis) workflow definition. Defines the pipeline
+  from codebase analysis to Task breakdowns. Not for direct execution —
+  use executing-sa to run with team conventions applied. Triggers when
+  the user wants to understand how the SA workflow works or review its
+  steps. Triggers on phrases like "SA workflow 怎麼運作",
+  "workflow 流程是什麼", "SA 流程有哪些步驟", "看一下 analyst-system".
 ---
 
 # SA Workflow
@@ -17,45 +14,6 @@ description: >
 ## 定義
 
 - 新規格：使用者持有且提供的規格文件，在 AgentSkill `analyst-system` 內稱為「新規格」
-
-## 遵循規範
-
-執行過程中，依據以下規範產出文件：
-
-- @rules/analysis/Vue-SFC-分析原則.md
-- @rules/analysis/Vue-SFC-組件分析規範.md
-- @rules/diagram/繪製flowchart基本原則.md
-- @rules/diagram/Codebase分析繪製flowchart原則.md
-- @rules/diagram/繪製SequenceDiagram原則.md
-- @rules/development/Class結構原則.md
-- @rules/development/JSDoc規範.md
-- @rules/development/Task文件規範.md
-- @rules/development/TDD開發原則.md
-- @rules/development/程式開發原則.md
-- @rules/development/編碼風格原則.md
-
----
-
-## 產出物目錄結構
-
-所有產出文件放置在當前工作目錄下：
-
-```
-./
-├── .sa/
-│   ├── codebase-analyze/        # 步驟一、二：既有 Codebase 分析
-│   ├── 新舊規格差異比對.md        # 步驟四
-│   ├── SA文件.md                 # 步驟六
-│   └── design/                  # 步驟八
-└── .tasks/                      # 步驟十
-```
-
-### 交付規則
-
-- 所有產出物寫成檔案，放置於對應目錄。
-- 不確定或多重解讀的部分，在文件內直接標記。
-- Human-in-loop 步驟：寫檔後，在對話中提供檔案路徑與摘要供使用者確認。
-- Task 引用 SA/Design 文件時，使用相對路徑（如 `.sa/design/xxx.md`）。
 
 ---
 
@@ -120,11 +78,12 @@ description: >
 
 所有 Human-in-loop 步驟遵循：
 
-1. 將產出物完整呈現給使用者。
-2. 若有標記不確定/多重解讀的部分，在摘要中列出，引導使用者重點確認。
-3. 詢問：內容是否正確？是否需要修正？
-4. **等待使用者回應，不可自行往下執行。**
-5. 確認通過 → 進入下一步驟。提出修正 → 更新產出物，重新呈現，再次確認。循環直到通過。
+1. 不確定或多重解讀的部分，在文件內直接標記。
+2. 寫檔後，在對話中提供檔案路徑與摘要供使用者確認。
+3. 若有標記不確定/多重解讀的部分，在摘要中列出，引導使用者重點確認。
+4. 詢問：內容是否正確？是否需要修正？
+5. **等待使用者回應，不可自行往下執行。**
+6. 確認通過 → 進入下一步驟。提出修正 → 更新產出物，重新呈現，再次確認。循環直到通過。
 
 ---
 
@@ -134,7 +93,7 @@ description: >
 
 分析既有 codebase，撰寫規格文件，描述目前系統的功能與行為。
 
-**產出**：`.sa/codebase-analyze/` 下的規格文件。
+**產出**：規格文件。
 
 ---
 
@@ -144,7 +103,7 @@ description: >
 
 分析既有 codebase，繪製架構文件：ClassDiagram、SequenceDiagram。
 
-**產出**：`.sa/codebase-analyze/` 下的架構文件。
+**產出**：架構文件。
 
 ---
 
@@ -165,7 +124,7 @@ description: >
 
 將既有規格（步驟一產出或使用者提供）與新規格比對。
 
-**產出**：`.sa/新舊規格差異比對.md`。
+**產出**：新舊規格差異比對文件。
 
 ---
 
@@ -192,7 +151,7 @@ description: >
 1. 依功能分類。
 2. 標記功能間的依賴關係。
 
-**產出**：`.sa/SA文件.md`。
+**產出**：SA 文件。
 
 ---
 
@@ -214,7 +173,7 @@ description: >
 - 繪製 ClassDiagram
 - 繪製 SequenceDiagram
 
-**產出**：`.sa/design/` 下該功能的 Design 文件。
+**產出**：該功能的 Design 文件。
 
 ### 步驟九：確認 Design 文件（Human-in-loop・optional）
 
@@ -232,8 +191,7 @@ description: >
 
 ### Task 產出要求
 
-- 遵循 Task 文件規範（@rules/development/Task文件規範.md）。
 - 每份 Task 須「摘要自足」— 開發者單獨看 Task 就能理解做什麼、怎麼做、為什麼。
 - 引用 SA/Design 文件路徑作為細節參考，非前置必讀。
 
-**產出**：`.tasks/` 下的 Task 文件。
+**產出**：Task 文件。
