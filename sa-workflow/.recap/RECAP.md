@@ -1,5 +1,33 @@
 # SA Workflow - Session Recap
 
+## Session 4 — 2026-07-07
+
+### 進度
+- 討論 analyst-system SKILL.md 的架構重構方向
+- 確立「純 workflow」定位：rules 和輸出目錄結構從 skill 移出，由 caller 注入
+
+### 關鍵決策
+- analyst-system 定位為純流程引擎，不內建任何外部規範引用或目錄結構
+- 穩定性由 caller 端透過「疊加規則、規範」達成，底層 flow 保持彈性
+- 不在 analyst-system 加前置條件聲明，需要的話寫使用文件
+- 接受 silent failure 風險，這是 LLM + SKILL 模式的固有特性
+- 輸出樣板暫留 skill 內，但認知到未來可能也移出以維持一致性
+- 分層架構：使用者 → caller（穩定端）→ analyst-system（彈性端）
+
+### 討論紀錄
+- [analyst-system 架構重構方向](../.improve/mind.md)
+
+### 待辦
+- [ ] 修改 analyst-system SKILL.md：移除「遵循規範」section 和「產出物目錄結構」section
+- [ ] 建立或更新 executing-sa command：注入 rules 和目錄結構
+- [ ] 決定樣板最終歸屬（留在 skill 或移出）
+- [ ] 根據 Task 樣板反推 Design 樣板（含面向拆分與抽象層級定義）（Session 3 遺留）
+- [ ] 執行第二輪 SA Workflow 驗證修正效果（Session 3 遺留）
+- [ ] Optional Human-in-loop 跳過注意事項（Session 3 遺留）
+- [ ] 並行處理優化（Session 3 遺留）
+
+---
+
 ## Session 3 — 2026-07-02
 
 ### 進度
